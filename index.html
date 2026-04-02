@@ -1004,7 +1004,10 @@
             showMessage('githubMsg', '⏳ Downloading from GitHub...', 'error');
 
             const config = getGithubConfig();
-            if (!config.repo || !config.token) return;
+            if (!config.repo || !config.token) {
+                showMessage('githubMsg', '❌ GitHub config not set', 'error');
+                return;
+            }
 
             try {
                 const [owner, repo] = config.repo.replace('https://github.com/', '').split('/');
@@ -1012,21 +1015,42 @@
                 
                 const response = await fetch(url, {
                     headers: {
-                        'Authorization': `Bearer ${config.token}`,
+                        'Authorization': `token ${config.token}`,
                         'Accept': 'application/vnd.github.v3.raw'
                     }
                 });
 
+                if (response.status === 404) {
+                    showMessage('githubMsg', '❌ No data.json found. Upload data from Device 1 first!', 'error');
+                    return;
+                }
+
                 if (!response.ok) {
-                    throw new Error('No data found on GitHub. Make sure to upload first.');
+                    throw new Error(`GitHub error: ${response.status}`);
                 }
 
                 const data = await response.json();
+                
+                // Verify data structure
+                if (!data.employees || !data.tasks) {
+                    throw new Error('Invalid data format from GitHub');
+                }
+
+                // Clear old data
+                localStorage.removeItem('system:employees');
+                localStorage.removeItem('system:tasks');
+
+                // Save new data
                 saveAllEmployees(data.employees);
                 saveAllTasks(data.tasks);
                 updateLastSyncTime();
-                showMessage('githubMsg', '✅ Successfully downloaded from GitHub! Please refresh.', 'success');
-                setTimeout(() => location.reload(), 2000);
+
+                showMessage('githubMsg', '✅ Download successful! Refreshing in 2 seconds...', 'success');
+                
+                // Auto refresh to reload dashboard
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } catch (error) {
                 console.error('Download error:', error);
                 showMessage('githubMsg', `❌ Download failed: ${error.message}`, 'error');
