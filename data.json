@@ -1,0 +1,29 @@
+{
+  "employees": [
+    {
+      "username": "shreyas",
+      "fullName": "",
+      "department": "",
+      "joinedDate": "3/4/2026"
+    },
+    {
+      "username": "uiui",
+      "fullName": "Shreyas Gangwar",
+      "department": "",
+      "joinedDate": "3/4/2026"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1775160777265,
+      "assignedTo": "shreyas",
+      "title": "website devlopment",
+      "description": "MAIN Website redevelopment",
+      "dueDate": "2026-04-06",
+      "priority": "high",
+      "status": "in-progress",
+      "createdAt": "3/4/2026, 1:42:57 am"
+    }
+  ],
+  "timestamp": "2026-04-02T20:56:48.105Z"
+}
